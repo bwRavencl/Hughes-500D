@@ -50,20 +50,20 @@ static void UpdateDoors(void)
         if(doorsLeftPosition < 1.0f && doorBounce == 0)
         {
             doorBounce = 0;
-					  doorSpeed = MAX_DOOR_SPEED * (1.5f - doorsLeftPosition);
+            doorSpeed = MAX_DOOR_SPEED * (1.5f - doorsLeftPosition);
 
-					  float newDoorPosition = doorsLeftPosition + doorSpeed * frameRatePeriod;
+            float newDoorPosition = doorsLeftPosition + doorSpeed * frameRatePeriod;
 
-					  if (newDoorPosition > 1.0f)
+            if (newDoorPosition > 1.0f)
                 newDoorPosition = 1.0f;
 
             doorsLeftPosition = newDoorPosition;
             doorsRightPosition = newDoorPosition;
         }
-				else
+        else
         {
-					  doorBounce = 1;
-					  doorSpeed = MAX_DOOR_SPEED * (doorsLeftPosition - 0.87f);
+            doorBounce = 1;
+            doorSpeed = MAX_DOOR_SPEED * (doorsLeftPosition - 0.87f);
 
             if (doorSpeed < 0.01f)
                 doorSpeed = 0.0f;
@@ -71,33 +71,33 @@ static void UpdateDoors(void)
             if (doorSpeed > 0.0f)
             {
                 float newDoorPosition = doorsLeftPosition - doorSpeed * frameRatePeriod;
-						
+
                 if (newDoorPosition < 0.0f)
                 {
-							      newDoorPosition = 0.0f;
-							      doorBounce = 0;
+                    newDoorPosition = 0.0f;
+                    doorBounce = 0;
                 }
 
                 doorsLeftPosition = newDoorPosition;
                 doorsRightPosition = newDoorPosition;
             }
-		    }
+        }
     }
     else
     // doors closed
     {
         doorBounce = 0;
-				doorSpeed = MAX_DOOR_SPEED * (1.2f - doorsLeftPosition);
+        doorSpeed = MAX_DOOR_SPEED * (1.2f - doorsLeftPosition);
 
-				if (doorsLeftPosition > 0.0f)
+        if (doorsLeftPosition > 0.0f)
         {
             float newDoorPosition = doorsLeftPosition - doorSpeed * frameRatePeriod;
             if (newDoorPosition < 0.0f)
-						    newDoorPosition = 0.0f;
+                newDoorPosition = 0.0f;
 
             doorsLeftPosition = newDoorPosition;
             doorsRightPosition = newDoorPosition;
-				}
+        }
     }
 }
 
@@ -117,9 +117,9 @@ static void UpdateRotor(void)
 {
     float pointTacrad[8];
     XPLMGetDatavf(pointTacradDataRef, pointTacrad, 0, 8);
-    
+
     float frameRatePeriod = XPLMGetDataf(frameRatePeriodDataRef);
-    
+
     // main rotor
     float v1 = XPLMGetDataf(rotorPositionMainDataRef) + RadiansToDegress(pointTacrad[0]) * frameRatePeriod;
     if (v1 > MAX_ROTATION )
@@ -134,8 +134,8 @@ static void UpdateRotor(void)
         v2 -= MAX_ROTATION;
     else if (v2 < -MAX_ROTATION)
         v2 += MAX_ROTATION;
-	  rotorPositionTail = v2;
-    
+    rotorPositionTail = v2;
+
     float cyclicElevDiscTilt = 0.0f;
     XPLMGetDatavf(cyclicElevDiscTiltDataRef, &cyclicElevDiscTilt, 0, 1);
     float cyclicAilnDiscTilt = 0.0f;
@@ -145,7 +145,7 @@ static void UpdateRotor(void)
     float newCyclicAilnDiscTilt = 0.0f;
     float newRotorMutingLowPitch = 0.0f;
     float newRotorMutingLowRoll = 0.0f;
-    
+
     if (pointTacrad[0] >= 15.0f)
     {
         tacradsHighMain = 1.0f;
@@ -163,7 +163,7 @@ static void UpdateRotor(void)
         float fpsAccMain = XPLMGetDataf(rotorPositionMainFpsMutingDataRef);
         if (fpsAccMain > 36000.0f)
             fpsAccMain -= 36000.0f;
-          
+
         rotorPositionMainFpsMuting = fpsAccMain + 36.0f;
         rotorPositionMainMuting = 0.0f;
     }
@@ -182,12 +182,12 @@ static void UpdateRotor(void)
 
         rotorPositionMainFpsMuting = 0.0f;
     }
-    
+
     XPLMSetDataf(cyclicElevDiscTiltDataRef, newCyclicElevDiscTilt);
     XPLMSetDataf(cyclicAilnDiscTiltDataRef, newCyclicAilnDiscTilt);
     rotorMutingLowPitch = newRotorMutingLowPitch;
     rotorMutingLowRoll = newRotorMutingLowRoll;
-    
+
     if (pointTacrad[1] >= 15.0f)
     {
         tacradsHighTail = 1.0f;
@@ -205,7 +205,7 @@ static void UpdateRotor(void)
         rotorPositionTailMuting = v2;
         rotorPositionTailFpsMuting = 0.0f;
     }
-    
+
     float acfNumBlades = 0.0f;
     XPLMGetDatavf(acfNumBladesDataRef, &acfNumBlades, 0, 1);
     if (acfNumBlades > 5.0f)
@@ -213,7 +213,7 @@ static void UpdateRotor(void)
 
     float bladeOffsetStep = 360.0f / acfNumBlades;
     float propAngle = XPLMGetDataf(rotorPositionMainDataRef) - bladeOffsetStep * 0.5f;
-    
+
     float pointPitchDeg = 0.0f;
     XPLMGetDatavf(pointPitchDegDataRef, &pointPitchDeg, 0, 1);
 
@@ -241,7 +241,7 @@ static void UpdatePilot(void)
 {
     float headHeading = XPLMGetDataf(headHeadingDataRef);
     float targetHeading = 0.0f;
-    
+
     if (XPLMGetDatai(ongroundAnyDataRef) == 1)
     // aircraft on ground
     {
@@ -263,18 +263,18 @@ static void UpdatePilot(void)
         targetHeading = -70.0f;
     else if (targetHeading > 70.0f)
         targetHeading = 70.0f;
-      
+
     float headingTargetDistancePercent = (targetHeading - headHeading) / 25.0f;
-    
+
     if (headingTargetDistancePercent > 1.0f)
         headingTargetDistancePercent = 1.0f;
     else if (headingTargetDistancePercent < -1.0f)
         headingTargetDistancePercent = -1.0f;
-        
+
     float headRotationSpeed = 150.0f;
 
     headHeading += HEAD_ROTATION_SPEED * headingTargetDistancePercent * XPLMGetDataf(frameRatePeriodDataRef);
-    
+
     if (headHeading < -70.0f)
           headHeading = -70.0f;
     else if (headHeading > 70.0f)
@@ -296,7 +296,7 @@ static void UpdateSwitches(void)
             nav1 = 1.0f;
             nav2 = 0.0f;
             break;
-            
+
         case 1:
             adf1 = 0.0f;
             adf2 = 0.0f;
@@ -306,7 +306,7 @@ static void UpdateSwitches(void)
             nav1 = 0.0f;
             nav2 = 1.0f;
             break;
-            
+
         case 2:
             adf1 = 1.0f;
             adf2 = 0.0f;
@@ -316,7 +316,7 @@ static void UpdateSwitches(void)
             nav1 = 0.0f;
             nav2 = 0.0f;
             break;
-            
+
         case 3:
             adf1 = 0.0f;
             adf2 = 1.0f;
@@ -326,7 +326,7 @@ static void UpdateSwitches(void)
             nav1 = 0.0f;
             nav2 = 0.0f;
             break;
-            
+
         case 5:
             adf1 = 0.0f;
             adf2 = 0.0f;
@@ -336,7 +336,7 @@ static void UpdateSwitches(void)
             nav1 = 0.0f;
             nav2 = 0.0f;
             break;
-            
+
         case 10:
             adf1 = 0.0f;
             adf2 = 0.0f;
@@ -346,7 +346,7 @@ static void UpdateSwitches(void)
             nav1 = 0.0f;
             nav2 = 0.0f;
             break;
-            
+
         case 11:
             adf1 = 0.0f;
             adf2 = 0.0f;
@@ -362,22 +362,22 @@ static void UpdateSwitches(void)
 static void UpdateTransitionalShudder(void)
 {
     float p = XPLMGetDataf(pDotDataRef);
-		float q = XPLMGetDataf(qDotDataRef);
+    float q = XPLMGetDataf(qDotDataRef);
 
     if (XPLMGetDatai(ongroundAnyDataRef))
     {
-		    p *= 0.001f;
-				q *= 0.5f;
+        p *= 0.001f;
+        q *= 0.5f;
     }
-    
+
     float pointTacrad[8];
     XPLMGetDatavf(pointTacradDataRef, pointTacrad, 0, 8);
 
-		p += sin(pointTacrad[4] * 0.03f) * pointTacrad[0] * 0.05f;
+    p += sin(pointTacrad[4] * 0.03f) * pointTacrad[0] * 0.05f;
     q += sin(pointTacrad[5] * 0.03f) * pointTacrad[1] * 0.005f;
 
     XPLMSetDataf(pDotDataRef, p);
-		XPLMSetDataf(qDotDataRef, q);
+    XPLMSetDataf(qDotDataRef, q);
 }
 
 // flightloop-callback that handles everything
@@ -388,7 +388,7 @@ static float FlightLoopCallback(float inElapsedSinceLastCall, float inElapsedTim
     UpdatePilot();
     UpdateSwitches();
     UpdateTransitionalShudder();
-    
+
     return -1.0f;
 }
 
@@ -725,7 +725,7 @@ PLUGIN_API int XPluginStart(char *outName, char *outSig, char *outDesc)
     rotorPositionTailMutingDataRef = XPLMRegisterDataAccessor("abb/rotor/position/degrees/tail/muting", xplmType_Float, 1, NULL, NULL, GetRotorPositionTailMutingCallback, SetRotorPositionTailMutingCallback, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
     rotorPositionMainFpsMutingDataRef = XPLMRegisterDataAccessor("abb/rotor/position/main/fps/muting", xplmType_Float, 1, NULL, NULL, GetRotorPositionMainFpsMutingCallback, SetRotorPositionMainFpsMutingCallback, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
     rotorPositionTailFpsMutingDataRef = XPLMRegisterDataAccessor("abb/rotor/position/tail/fps/muting", xplmType_Float, 1, NULL, NULL, GetRotorPositionTailFpsMutingCallback, SetRotorPositionTailFpsMutingCallback, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-    
+
     // obtain datarefs
     acfNumBladesDataRef = XPLMFindDataRef("sim/aircraft/prop/acf_num_blades");
     acfCyclicAilnDataRef = XPLMFindDataRef("sim/aircraft/vtolcontrols/acf_cyclic_ailn");
